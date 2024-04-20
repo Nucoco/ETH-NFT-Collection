@@ -1,3 +1,4 @@
+// deploy.js
 async function main() {
   // コントラクトを扱うために必要なファイルが `artifacts` ディレクトリの直下に生成されます。
   // getContractFactory関数は、デプロイをサポートするライブラリのアドレスとMyEpicNFTコントラクトの連携を行っています。
@@ -13,6 +14,14 @@ async function main() {
   // コントラクトが Mint され、ローカルのブロックチェーンにデプロイされるまで待ちます。
   await nftContract.deployed();
   console.log("Contract deployed to:", nftContract.address);
+  // makeAnEpicNFT 関数を呼び出す。NFT が Mint される。
+  let txn = await nftContract.makeAnEpicNFT();
+  // Minting が仮想マイナーにより、承認されるのを待つ。
+  await txn.wait();
+  // makeAnEpicNFT 関数をもう一度呼び出す。NFT がまた Mint される。
+  txn = await nftContract.makeAnEpicNFT();
+  // Minting が仮想マイナーにより、承認されるのを待つ。
+  await txn.wait();
 };
 
 main().catch((error) => {
