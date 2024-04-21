@@ -18,10 +18,7 @@ async function main() {
   let txn = await nftContract.makeAnEpicNFT();
   // Minting が仮想マイナーにより、承認されるのを待つ。
   await txn.wait();
-  // makeAnEpicNFT 関数をもう一度呼び出す。NFT がまた Mint される。
-  txn = await nftContract.makeAnEpicNFT();
-  // Minting が仮想マイナーにより、承認されるのを待つ。
-  await txn.wait();
+  console.log('Minted NFT #1');
 };
 
 main().catch((error) => {
