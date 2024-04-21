@@ -6,6 +6,7 @@ import twitterLogo from "./assets/twitter-logo.svg";
 
 const TWITTER_HANDLE = "あなたのTwitterのハンドルネームを貼り付けてください";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
+const CONTRACT_ADDRESS = "0xAC196cbd35022dc4fA9d32Cb691892Dd20E0AFB1";
 
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -20,6 +21,7 @@ const App = () => {
     } else {
       console.log("We have the ethereum object", ethereum);
     }
+
     // インストールされていればアカウントを取得
     const accounts = await ethereum.request({ method: "eth_accounts" });
 
@@ -28,6 +30,7 @@ const App = () => {
       const account = accounts[0];
       console.log("Found an authorized account:", account);
       setCurrentAccount(account);
+      setupEventListener();
     } else {
       console.log("No authorized account found");
     }
@@ -45,13 +48,42 @@ const App = () => {
       console.log("Connected", accounts[0]);
 
       setCurrentAccount(accounts[0]);
+      setupEventListener();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const setupEventListener = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        // NFT が発行されます。
+        const connectedContract = new ethers.Contract(
+          CONTRACT_ADDRESS,
+          myEpicNft.abi,
+          signer
+        );
+        // eventListener
+        // Event が　emit される際に、コントラクトから送信される情報を受け取っています。
+        connectedContract.on("NewEpicNFTMinted", (from, tokenId) => {
+          console.log(from, tokenId.toNumber());
+          alert(
+            `あなたのウォレットに NFT を送信しました。gemcase に表示されるまで数分かかることがあります。NFT へのリンクはこちらです: https://gemcase.vercel.app/view/evm/sepolia/${CONTRACT_ADDRESS}/${tokenId.toNumber()}`,
+          );
+        });
+        console.log("Setup event listener!");
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const askContractToMintNft = async () => {
-    const CONTRACT_ADDRESS = "0xC71fffE3a93B1F76f88d87504c1A97E0b4896Ad2";
     try {
       const { ethereum } = window;
       if (ethereum) {
