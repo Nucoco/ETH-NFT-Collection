@@ -1,21 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import "./styles/App.css";
+import twitterLogo from "./assets/twitter-logo.svg";
 
-import twitterLogo from './assets/twitter-logo.svg';
-import './styles/App.css';
-
-// Constantsを宣言する: constとは値書き換えを禁止した変数を宣言する方法です。
-const TWITTER_HANDLE = 'あなたのTwitterのハンドルネームを貼り付けてください';
+const TWITTER_HANDLE = "あなたのTwitterのハンドルネームを貼り付けてください";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const OPENSEA_LINK = '';
-const TOTAL_MINT_COUNT = 50;
 
 const App = () => {
-  // renderNotConnectedContainer メソッドを定義します。
+  const [currentAccount, setCurrentAccount] = useState("");
+  console.log("currentAccount: ", currentAccount);
+
+  const checkIfWalletIsConnected = async () => {
+    const { ethereum } = window;
+    // metamaskがインストールされているか確認
+    if (!ethereum) {
+      console.log("Make sure you have MetaMask!");
+      return;
+    } else {
+      console.log("We have the ethereum object", ethereum);
+    }
+    // インストールされていればアカウントを取得
+    const accounts = await ethereum.request({ method: "eth_accounts" });
+
+    // アクセス許可されているアカウントがあれば配列が返る
+    if (accounts.length !== 0) {
+      const account = accounts[0];
+      console.log("Found an authorized account:", account);
+      setCurrentAccount(account);
+    } else {
+      console.log("No authorized account found");
+    }
+  };
+
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+      // アカウントへのアクセス許可を申請
+      const accounts = await ethereum.request({method: "eth_requestAccounts"});
+      console.log("Connected", accounts[0]);
+
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderNotConnectedContainer = () => (
-    <button className="cta-button connect-wallet-button">
+    <button
+      onClick={connectWallet}
+      className="cta-button connect-wallet-button"
+    >
       Connect to Wallet
     </button>
   );
+
+  useEffect(() => {
+    checkIfWalletIsConnected();
+  }, []);
 
   return (
     <div className="App">
@@ -23,7 +67,13 @@ const App = () => {
         <div className="header-container">
           <p className="header gradient-text">My NFT Collection</p>
           <p className="sub-text">あなただけの特別な NFT を Mint しよう💫</p>
-          {renderNotConnectedContainer()}
+          {currentAccount === "" ? (
+            renderNotConnectedContainer()
+          ) : (
+            <button onClick={null} className="cta-button connect-wallet-button">
+              Mint NFT
+            </button>
+          )}
         </div>
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
@@ -38,5 +88,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
