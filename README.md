@@ -1,19 +1,36 @@
-# Create your first NFT collection.
+# Project summary
+https://github.com/unchain-tech/UNCHAIN-projects/tree/main/docs/ETH-NFT-Collection/ja/section-0
 
-![](/packages/client/public/ETH-NFT-banner-blur.png)
+# NFT概要
+eip721 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
 
-このコースを始めるには、下記のステップを実行してください。
+opensea要約 https://zenn.dev/hayatoomori/articles/f26cc4637c7d66
 
-1. あなたの Github アカウントにこのレポジトリをフォークしましょう。
+NFT: コントラクト内のマッピング（address -> jsonを返すtokenUri）
 
-2. クローンしたレポジトリをあなたのローカル環境にダウンロードしましょう。
+## オフチェーンNFT
+tokenUriにeip721準拠のjsonを返すwebURLを設定 など
+## オンチェーンNFT
+画像なら・・・
+1. svgを作成
+2. 1.をbase64エンコード
+3. 2.を ```data:image/svg+xml;base64,<base64EncodedSVG>``` にする
+4. 3.をimage属性として持つeip721準拠のjsonを作成
+5. 4.をbase64エンコード
+6. 5.を ```data:application/json;base64,<base64EncodedJSON>```の形式でtokenUriに設定
 
-3. ターミナルを開き、ディレクトリのルートで `yarn install` を実行します。
+# Refs
+NFTviewer https://gemcase.vercel.app/
+## オフチェーンNFT
+JSONデータのホスティングサービス https://www.npoint.io/
 
-4. `yarn client start` を実行してプロジェクトを開始します。
+画像の無料アップロードサービス https://imgur.com/
+## オンチェーンNFT
+SVGviewer https://www.svgviewer.dev/
 
-5. コーディングを始めましょう。
+base64エンコード https://www.utilities-online.info/base64
 
----
-
-Banner logo created by modifying "3dicons - Open source 3D icon library" © [vijay verma](https://www.figma.com/community/file/1030350068466019692) (Licensed under CC BY 4.0).
+# コントラクト再デプロイ時の注意点
+1. 再デプロイ。yarn contract deploy:sepoliaを実行
+2. App.jsのCONTRACT_ADDRESSを更新
+3. ABIファイルpackages/client/src/utils/MyEpicNFT.json を更新
